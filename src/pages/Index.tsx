@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { toast } from '@/hooks/use-toast';
 import Header from '@/components/layout/Header';
@@ -256,8 +255,8 @@ const Index = () => {
             <Card>
               <CardContent className="p-4">
                 <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 rounded-full bg-cauca-verde-100 flex items-center justify-center">
-                    <span className="text-cauca-verde-600 font-semibold">
+                  <div className="w-10 h-10 rounded-full bg-cauca-morado-100 flex items-center justify-center">
+                    <span className="text-cauca-morado-600 font-semibold">
                       {user.name.charAt(0).toUpperCase()}
                     </span>
                   </div>
@@ -286,6 +285,7 @@ const Index = () => {
                 userLocation={userLocation}
                 onIncidentClick={handleIncidentClick}
                 onLocationUpdate={handleLocationUpdate}
+                user={user}
               />
               
               {/* Botón flotante para reportar */}
@@ -318,7 +318,7 @@ const Index = () => {
               <h2 className="text-2xl font-bold cauca-text-gradient">Reportes Recientes</h2>
               
               {incidents.map((incident) => (
-                <Card key={incident.id} className="hover:shadow-md transition-shadow">
+                <Card key={incident.id} className="hover:shadow-md transition-shadow border-cauca-morado-200">
                   <CardContent className="p-4">
                     <div className="flex items-start justify-between mb-2">
                       <div className="flex items-center space-x-2">
@@ -344,7 +344,7 @@ const Index = () => {
                     <div className="flex items-center justify-between text-xs text-gray-500">
                       <span>{new Date(incident.reportedAt).toLocaleString()}</span>
                       {incident.verified && (
-                        <Badge variant="outline" className="text-cauca-verde-600">
+                        <Badge variant="outline" className="text-cauca-morado-600">
                           ✓ Verificado
                         </Badge>
                       )}
@@ -431,13 +431,13 @@ const Index = () => {
                 <CardContent>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="text-center">
-                      <p className="text-2xl font-bold text-cauca-verde-600">
+                      <p className="text-2xl font-bold text-cauca-morado-600">
                         {incidents.filter(i => i.reportedBy === user.id).length}
                       </p>
                       <p className="text-sm text-gray-600">Reportes realizados</p>
                     </div>
                     <div className="text-center">
-                      <p className="text-2xl font-bold text-cauca-azul-600">24h</p>
+                      <p className="text-2xl font-bold text-cauca-violeta-600">24h</p>
                       <p className="text-sm text-gray-600">Tiempo en la red</p>
                     </div>
                   </div>
