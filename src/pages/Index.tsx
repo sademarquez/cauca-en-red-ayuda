@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from '@/hooks/use-toast';
-import Header from '@/components/layout/Header';
-import LoginForm from '@/components/auth/LoginForm';
+import { Header } from '@/components/layout/Header';
+import { LoginForm } from '@/components/auth/LoginForm';
 import CaucaMap from '@/components/map/CaucaMap';
-import ReportIncident from '@/components/incidents/ReportIncident';
+import { ReportIncident } from '@/components/incidents/ReportIncident';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -34,7 +34,7 @@ const Index = () => {
       description: 'Manifestación pacífica bloqueando la vía Popayán-Cali a la altura del peaje',
       type: 'other',
       status: 'active',
-      location: { lat: 2.4448, lng: -76.6147 },
+      location: { lat: 2.4448, lng: -76.6147, address: 'Vía Popayán-Cali', municipality: 'Popayán' },
       reportedBy: 'user-1',
       reportedAt: new Date('2024-06-14T10:30:00'),
       severity: 'medium',
@@ -47,7 +47,7 @@ const Index = () => {
       description: 'Deslizamiento de tierra afecta acceso a veredas en la zona alta de Timbío',
       type: 'natural_disaster',
       status: 'active',
-      location: { lat: 2.3444, lng: -76.6847 },
+      location: { lat: 2.3444, lng: -76.6847, address: 'Zona rural Timbío', municipality: 'Timbío' },
       reportedBy: 'user-2',
       reportedAt: new Date('2024-06-14T08:15:00'),
       severity: 'high',
@@ -60,7 +60,7 @@ const Index = () => {
       description: 'Líder social recibe amenazas por WhatsApp en el norte del Cauca',
       type: 'threat',
       status: 'investigating',
-      location: { lat: 2.8448, lng: -76.4147 },
+      location: { lat: 2.8448, lng: -76.4147, address: 'Norte del Cauca', municipality: 'Santander de Quilichao' },
       reportedBy: 'user-3',
       reportedAt: new Date('2024-06-13T22:45:00'),
       severity: 'critical',
@@ -400,7 +400,6 @@ const Index = () => {
             </div>
           </TabsContent>
 
-          {/* Nueva pestaña de apoyo para víctimas */}
           <TabsContent value="victim-support" className="h-full m-0 p-4 overflow-y-auto">
             <div className="space-y-6">
               <div className="text-center">
@@ -411,7 +410,6 @@ const Index = () => {
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {/* Emergencia médica/evacuación */}
                 <Card className="hover:shadow-lg transition-shadow cursor-pointer border-red-200" 
                       onClick={() => setIsEmergencySheetOpen(true)}>
                   <CardContent className="p-6 text-center">
@@ -426,7 +424,6 @@ const Index = () => {
                   </CardContent>
                 </Card>
 
-                {/* Recursos básicos */}
                 <Card className="hover:shadow-lg transition-shadow cursor-pointer border-blue-200"
                       onClick={() => setIsResourceSheetOpen(true)}>
                   <CardContent className="p-6 text-center">
@@ -441,7 +438,6 @@ const Index = () => {
                   </CardContent>
                 </Card>
 
-                {/* Refugio seguro */}
                 <Card className="hover:shadow-lg transition-shadow cursor-pointer border-yellow-200"
                       onClick={() => setIsSafeZoneSheetOpen(true)}>
                   <CardContent className="p-6 text-center">
@@ -457,7 +453,6 @@ const Index = () => {
                 </Card>
               </div>
 
-              {/* Información de contactos de emergencia */}
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center space-x-2">

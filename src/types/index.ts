@@ -3,112 +3,119 @@
 
 export interface User {
   id: string;
-  nombre: string;
+  name: string; // Cambio de 'nombre' a 'name' para consistencia
   email: string;
-  telefono?: string;
-  rol: 'citizen' | 'leader' | 'admin';
+  phone?: string; // Cambio de 'telefono' a 'phone' para consistencia
+  role: 'citizen' | 'leader' | 'admin'; // Cambio de 'rol' a 'role' para consistencia
   region: string;
-  municipio?: string;
-  verificado: boolean;
-  creadoEn: Date;
-  ultimoAcceso: Date;
+  municipality?: string; // Cambio de 'municipio' a 'municipality' para consistencia
+  verified: boolean; // Cambio de 'verificado' a 'verified' para consistencia
+  createdAt: Date; // Cambio de 'creadoEn' a 'createdAt' para consistencia
+  lastAccess: Date; // Cambio de 'ultimoAcceso' a 'lastAccess' para consistencia
+}
+
+export interface UserLocation {
+  lat: number;
+  lng: number;
+  accuracy?: number;
+  timestamp: Date;
 }
 
 export interface Incident {
   id: string;
-  titulo: string;
-  descripcion: string;
-  tipo: 'attack' | 'displacement' | 'threat' | 'natural_disaster' | 'other';
-  estado: 'active' | 'resolved' | 'investigating' | 'pending';
-  ubicacion: {
-    latitud: number;
-    longitud: number;
-    direccion: string;
-    municipio: string;
-    vereda?: string;
+  title: string; // Cambio de 'titulo' a 'title' para consistencia
+  description: string; // Cambio de 'descripcion' a 'description' para consistencia
+  type: 'attack' | 'displacement' | 'threat' | 'natural_disaster' | 'other'; // Cambio de 'tipo' a 'type'
+  status: 'active' | 'resolved' | 'investigating' | 'pending'; // Cambio de 'estado' a 'status'
+  location: { // Cambio de 'ubicacion' a 'location'
+    lat: number; // Cambio de 'latitud' a 'lat'
+    lng: number; // Cambio de 'longitud' a 'lng'
+    address: string; // Cambio de 'direccion' a 'address'
+    municipality: string; // Cambio de 'municipio' a 'municipality'
+    village?: string; // Cambio de 'vereda' a 'village'
   };
-  reportadoPor: string;
-  reportadoEn: Date;
-  severidad: 'low' | 'medium' | 'high' | 'critical';
-  personasAfectadas?: number;
-  imagenes?: string[];
-  verificado: boolean;
-  verificadoPor?: string;
-  contactoEmergencia?: string;
+  reportedBy: string; // Cambio de 'reportadoPor' a 'reportedBy'
+  reportedAt: Date; // Cambio de 'reportadoEn' a 'reportedAt'
+  severity: 'low' | 'medium' | 'high' | 'critical'; // Cambio de 'severidad' a 'severity'
+  affectedPeople?: number; // Cambio de 'personasAfectadas' a 'affectedPeople'
+  images?: string[]; // Cambio de 'imagenes' a 'images'
+  verified: boolean; // Cambio de 'verificado' a 'verified'
+  verifiedBy?: string; // Cambio de 'verificadoPor' a 'verifiedBy'
+  emergencyContact?: string; // Cambio de 'contactoEmergencia' a 'emergencyContact'
 }
 
 export interface EmergencyRequest {
   id: string;
-  usuarioId: string;
-  tipoEmergencia: 'medical' | 'security' | 'natural_disaster' | 'violence' | 'other';
-  descripcion: string;
-  ubicacion: {
-    latitud: number;
-    longitud: number;
-    direccion: string;
-    municipio: string;
+  userId: string; // Cambio de 'usuarioId' a 'userId'
+  emergencyType: 'medical' | 'security' | 'natural_disaster' | 'violence' | 'other'; // Cambio de 'tipoEmergencia' a 'emergencyType'
+  description: string; // Cambio de 'descripcion' a 'description'
+  location: { // Cambio de 'ubicacion' a 'location'
+    lat: number; // Cambio de 'latitud' a 'lat'
+    lng: number; // Cambio de 'longitud' a 'lng'
+    address: string; // Cambio de 'direccion' a 'address'
+    municipality: string; // Cambio de 'municipio' a 'municipality'
   };
-  estado: 'pending' | 'in_progress' | 'resolved' | 'cancelled';
-  prioridad: 'low' | 'medium' | 'high' | 'critical';
-  creadoEn: Date;
-  actualizadoEn: Date;
-  contacto: string;
-  personasAfectadas: number;
+  status: 'pending' | 'in_progress' | 'resolved' | 'cancelled'; // Cambio de 'estado' a 'status'
+  priority: 'low' | 'medium' | 'high' | 'critical'; // Cambio de 'prioridad' a 'priority'
+  createdAt: Date; // Cambio de 'creadoEn' a 'createdAt'
+  updatedAt: Date; // Cambio de 'actualizadoEn' a 'updatedAt'
+  contact: string; // Cambio de 'contacto' a 'contact'
+  affectedPeople: number; // Cambio de 'personasAfectadas' a 'affectedPeople'
 }
 
 export interface ResourceRequest {
   id: string;
-  usuarioId: string;
-  tipoRecurso: 'food' | 'water' | 'medicine' | 'shelter' | 'clothing' | 'transportation' | 'other';
-  descripcion: string;
-  cantidad: string;
-  urgencia: 'low' | 'medium' | 'high' | 'critical';
-  ubicacion: {
-    latitud: number;
-    longitud: number;
-    direccion: string;
-    municipio: string;
+  userId: string; // Cambio de 'usuarioId' a 'userId'
+  resourceType: 'food' | 'water' | 'medicine' | 'shelter' | 'clothing' | 'transportation' | 'other'; // Cambio de 'tipoRecurso' a 'resourceType'
+  description: string; // Cambio de 'descripcion' a 'description'
+  quantity: string; // Cambio de 'cantidad' a 'quantity'
+  urgency: 'low' | 'medium' | 'high' | 'critical'; // Cambio de 'urgencia' a 'urgency'
+  location: { // Cambio de 'ubicacion' a 'location'
+    lat: number; // Cambio de 'latitud' a 'lat'
+    lng: number; // Cambio de 'longitud' a 'lng'
+    address: string; // Cambio de 'direccion' a 'address'
+    municipality: string; // Cambio de 'municipio' a 'municipality'
   };
-  estado: 'pending' | 'approved' | 'in_delivery' | 'delivered' | 'cancelled';
-  creadoEn: Date;
-  fechaLimite?: Date;
-  contacto: string;
-  beneficiarios: number;
+  status: 'pending' | 'approved' | 'in_delivery' | 'delivered' | 'cancelled'; // Cambio de 'estado' a 'status'
+  createdAt: Date; // Cambio de 'creadoEn' a 'createdAt'
+  deadlineDate?: Date; // Cambio de 'fechaLimite' a 'deadlineDate'
+  contact: string; // Cambio de 'contacto' a 'contact'
+  beneficiaries: number; // Cambio de 'beneficiarios' a 'beneficiaries'
 }
 
 export interface SafeZoneRequest {
   id: string;
-  usuarioId: string;
-  tipoSolicitud: 'temporary_shelter' | 'permanent_relocation' | 'safe_transport' | 'protection';
-  motivo: string;
-  personasAfectadas: number;
-  edadMenores?: number;
-  edadAdultos?: number;
-  edadMayores?: number;
-  ubicacionActual: {
-    latitud: number;
-    longitud: number;
-    direccion: string;
-    municipio: string;
+  userId: string; // Cambio de 'usuarioId' a 'userId'
+  requestType: 'temporary_shelter' | 'permanent_relocation' | 'safe_transport' | 'protection'; // Cambio de 'tipoSolicitud' a 'requestType'
+  reason: string; // Cambio de 'motivo' a 'reason'
+  affectedPeople: number; // Cambio de 'personasAfectadas' a 'affectedPeople'
+  minorsAge?: number; // Cambio de 'edadMenores' a 'minorsAge'
+  adultsAge?: number; // Cambio de 'edadAdultos' a 'adultsAge'
+  seniorsAge?: number; // Cambio de 'edadMayores' a 'seniorsAge'
+  currentLocation: { // Cambio de 'ubicacionActual' a 'currentLocation'
+    lat: number; // Cambio de 'latitud' a 'lat'
+    lng: number; // Cambio de 'longitud' a 'lng'
+    address: string; // Cambio de 'direccion' a 'address'
+    municipality: string; // Cambio de 'municipio' a 'municipality'
   };
-  ubicacionDeseada?: string;
-  estado: 'pending' | 'evaluating' | 'approved' | 'relocated' | 'denied';
-  creadoEn: Date;
-  contacto: string;
-  urgencia: 'low' | 'medium' | 'high' | 'critical';
+  desiredLocation?: string; // Cambio de 'ubicacionDeseada' a 'desiredLocation'
+  status: 'pending' | 'evaluating' | 'approved' | 'relocated' | 'denied'; // Cambio de 'estado' a 'status'
+  createdAt: Date; // Cambio de 'creadoEn' a 'createdAt'
+  contact: string; // Cambio de 'contacto' a 'contact'
+  urgency: 'low' | 'medium' | 'high' | 'critical'; // Cambio de 'urgencia' a 'urgency'
 }
 
 export interface CommunityNetwork {
   id: string;
-  liderId: string;
-  miembros: string[];
+  leaderId: string; // Cambio de 'liderId' a 'leaderId'
+  members: string[]; // Cambio de 'miembros' a 'members'
   region: string;
-  municipio: string;
-  nombre: string;
-  descripcion: string;
-  creadoEn: Date;
-  activa: boolean;
-  tipoRed: 'security' | 'support' | 'emergency' | 'development';
+  municipality: string; // Cambio de 'municipio' a 'municipality'
+  name: string; // Cambio de 'nombre' a 'name'
+  description: string; // Cambio de 'descripcion' a 'description'
+  createdAt: Date; // Cambio de 'creadoEn' a 'createdAt'
+  active: boolean; // Cambio de 'activa' a 'active'
+  networkType: 'security' | 'support' | 'emergency' | 'development'; // Cambio de 'tipoRed' a 'networkType'
 }
 
 export interface Municipality {
