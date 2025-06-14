@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { toast } from '@/hooks/use-toast';
 import Header from '@/components/layout/Header';
 import LoginForm from '@/components/auth/LoginForm';
-import CaucaMap from '@/components/map/CaucaMap';
+import OpenStreetCaucaMap from '@/components/map/OpenStreetCaucaMap';
 import ReportIncident from '@/components/incidents/ReportIncident';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
@@ -21,7 +21,6 @@ const Index = () => {
   const [activeTab, setActiveTab] = useState('map');
   const [isReportSheetOpen, setIsReportSheetOpen] = useState(false);
 
-  // Datos de ejemplo para demostración
   const sampleIncidents: Incident[] = [
     {
       id: '1',
@@ -172,7 +171,6 @@ const Index = () => {
         notificationCount={3}
       />
 
-      {/* Menú lateral */}
       <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
         <SheetContent side="left" className="w-80">
           <SheetHeader>
@@ -277,10 +275,10 @@ const Index = () => {
       {/* Contenido principal */}
       <main className="flex-1 overflow-hidden">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full">
-          {/* Mapa principal */}
+          {/* Mapa principal con OpenStreetMap */}
           <TabsContent value="map" className="h-full m-0">
             <div className="relative h-full">
-              <CaucaMap
+              <OpenStreetCaucaMap
                 incidents={incidents}
                 userLocation={userLocation}
                 onIncidentClick={handleIncidentClick}
@@ -312,7 +310,6 @@ const Index = () => {
             </div>
           </TabsContent>
 
-          {/* Lista de incidentes */}
           <TabsContent value="incidents" className="h-full m-0 p-4 overflow-y-auto">
             <div className="space-y-4">
               <h2 className="text-2xl font-bold cauca-text-gradient">Reportes Recientes</h2>
