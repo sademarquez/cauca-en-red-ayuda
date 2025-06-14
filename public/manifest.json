@@ -2,7 +2,7 @@
 {
   "name": "CaucaConecta - Red de Apoyo y Seguridad",
   "short_name": "CaucaConecta",
-  "description": "PWA para víctimas del conflicto y ciudadanos del Cauca. Reporta incidentes, conecta con líderes y construye redes de apoyo.",
+  "description": "PWA para víctimas del conflicto y ciudadanos del Cauca. Reporta incidentes, conecta con líderes comunitarios y construye redes de apoyo.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
@@ -10,33 +10,51 @@
   "orientation": "portrait-primary",
   "scope": "/",
   "lang": "es",
+  "categories": ["social", "utilities", "government"],
   "icons": [
     {
-      "src": "/icon-192x192.png",
+      "src": "/placeholder.svg",
       "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "maskable any"
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
     },
     {
-      "src": "/icon-512x512.png",
+      "src": "/placeholder.svg",
       "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable any"
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
     }
   ],
-  "categories": ["social", "utilities", "productivity"],
-  "screenshots": [
+  "shortcuts": [
     {
-      "src": "/screenshot-wide.png",
-      "sizes": "1280x720",
-      "type": "image/png",
-      "form_factor": "wide"
+      "name": "Reportar Emergencia",
+      "short_name": "Emergencia",
+      "description": "Reportar una emergencia rápidamente",
+      "url": "/?action=emergency",
+      "icons": [
+        {
+          "src": "/placeholder.svg",
+          "sizes": "96x96"
+        }
+      ]
     },
     {
-      "src": "/screenshot-narrow.png",
-      "sizes": "750x1334",
-      "type": "image/png",
-      "form_factor": "narrow"
+      "name": "Ver Mapa",
+      "short_name": "Mapa",
+      "description": "Ver el mapa de incidentes",
+      "url": "/?view=map",
+      "icons": [
+        {
+          "src": "/placeholder.svg",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ],
+  "protocol_handlers": [
+    {
+      "protocol": "web+caucaconecta",
+      "url": "/?handler=%s"
     }
   ]
 }

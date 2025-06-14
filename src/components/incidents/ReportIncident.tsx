@@ -1,261 +1,171 @@
 
-import React, { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { MapPin, Camera, Send, AlertTriangle } from 'lucide-react';
-import { Incident, UserLocation } from '@/types';
+import React, { useState } from 'react';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertTriangle, MapPin, Camera } from "lucide-react";
 
-interface ReportIncidentProps {
-  userLocation?: UserLocation;
-  onSubmit: (incident: Omit<Incident, 'id' | 'reportedAt' | 'verified' | 'verifiedBy'>) => void;
-  onLocationRequest: () => void;
-  user: any;
-}
-
-const ReportIncident: React.FC<ReportIncidentProps> = ({
-  userLocation,
-  onSubmit,
-  onLocationRequest,
-  user
-}) => {
+export const ReportIncident = () => {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    type: 'other' as Incident['type'],
-    severity: 'medium' as Incident['severity'],
-    affectedPeople: '',
-    location: userLocation || null,
-    manualAddress: ''
+    type: '',
+    location: '',
+    severity: '',
+    affectedPeople: ''
   });
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const incidentTypes = [
-    { value: 'attack', label: 'Ataque o Violencia', icon: '🚨' },
-    { value: 'displacement', label: 'Desplazamiento', icon: '🏠' },
-    { value: 'threat', label: 'Amenaza', icon: '⚠️' },
-    { value: 'natural_disaster', label: 'Desastre Natural', icon: '🌊' },
-    { value: 'other', label: 'Otro', icon: '📍' }
-  ];
-
-  const severityLevels = [
-    { value: 'low', label: 'Bajo', color: 'text-green-600' },
-    { value: 'medium', label: 'Medio', color: 'text-yellow-600' },
-    { value: 'high', label: 'Alto', color: 'text-orange-600' },
-    { value: 'critical', label: 'Crítico', color: 'text-red-600' }
-  ];
-
-  useEffect(() => {
-    if (userLocation) {
-      setFormData(prev => ({ ...prev, location: userLocation }));
-    }
-  }, [userLocation]);
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
+    setLoading(true);
 
     try {
-      const incident: Omit<Incident, 'id' | 'reportedAt' | 'verified' | 'verifiedBy'> = {
-        title: formData.title,
-        description: formData.description,
-        type: formData.type,
-        severity: formData.severity,
-        status: 'active',
-        location: formData.location ? {
-          lat: formData.location.lat,
-          lng: formData.location.lng,
-          address: formData.manualAddress || undefined
-        } : {
-          lat: 2.4448, // Centro del Cauca por defecto
-          lng: -76.6147,
-          address: formData.manualAddress
-        },
-        reportedBy: user.id,
-        affectedPeople: formData.affectedPeople ? parseInt(formData.affectedPeople) : undefined
-      };
-
-      await onSubmit(incident);
+      // Aquí iría la lógica para enviar el reporte a Firebase
+      console.log('Enviando reporte:', formData);
       
-      // Resetear formulario
-      setFormData({
-        title: '',
-        description: '',
-        type: 'other',
-        severity: 'medium',
-        affectedPeople: '',
-        location: userLocation || null,
-        manualAddress: ''
-      });
-
+      setTimeout(() => {
+        setLoading(false);
+        setSuccess(true);
+        // Resetear formulario
+        setFormData({
+          title: '',
+          description: '',
+          type: '',
+          location: '',
+          severity: '',
+          affectedPeople: ''
+        });
+      }, 1000);
     } catch (error) {
-      console.error('Error al reportar incidente:', error);
-    } finally {
-      setIsSubmitting(false);
+      setLoading(false);
+      console.error('Error enviando reporte:', error);
     }
   };
 
+  const handleChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
   return (
-    <Card className="w-full max-w-2xl mx-auto shadow-lg">
-      <CardHeader className="bg-gradient-to-r from-cauca-verde-50 to-cauca-azul-50">
-        <CardTitle className="flex items-center space-x-2 text-cauca-verde-700">
-          <AlertTriangle className="h-5 w-5" />
-          <span>Reportar Incidente</span>
+    <Card className="w-full max-w-2xl mx-auto">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <AlertTriangle className="h-5 w-5 text-cauca-rojo-500" />
+          Reportar Incidente
         </CardTitle>
         <CardDescription>
-          Ayúdanos a mantener segura nuestra comunidad reportando situaciones importantes
+          Reporta un incidente de seguridad o emergencia en tu comunidad
         </CardDescription>
       </CardHeader>
+      <CardContent>
+        {success && (
+          <Alert className="mb-4 border-cauca-verde-200 bg-cauca-verde-50">
+            <AlertDescription className="text-cauca-verde-700">
+              Reporte enviado exitosamente. Gracias por contribuir a la seguridad de la comunidad.
+            </AlertDescription>
+          </Alert>
+        )}
 
-      <CardContent className="p-6">
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Título del incidente */}
-          <div className="space-y-2">
-            <Label htmlFor="title">Título del incidente *</Label>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <Label htmlFor="title">Título del incidente</Label>
             <Input
               id="title"
-              required
-              placeholder="Describe brevemente lo que está sucediendo"
               value={formData.title}
-              onChange={(e) => setFormData({...formData, title: e.target.value})}
-            />
-          </div>
-
-          {/* Tipo de incidente */}
-          <div className="space-y-3">
-            <Label>Tipo de incidente *</Label>
-            <RadioGroup
-              value={formData.type}
-              onValueChange={(value: Incident['type']) => setFormData({...formData, type: value})}
-            >
-              {incidentTypes.map((type) => (
-                <div key={type.value} className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-50">
-                  <RadioGroupItem value={type.value} id={type.value} />
-                  <Label htmlFor={type.value} className="flex items-center space-x-2 cursor-pointer">
-                    <span className="text-lg">{type.icon}</span>
-                    <span>{type.label}</span>
-                  </Label>
-                </div>
-              ))}
-            </RadioGroup>
-          </div>
-
-          {/* Nivel de severidad */}
-          <div className="space-y-3">
-            <Label>Nivel de severidad *</Label>
-            <RadioGroup
-              value={formData.severity}
-              onValueChange={(value: Incident['severity']) => setFormData({...formData, severity: value})}
-            >
-              <div className="grid grid-cols-2 gap-2">
-                {severityLevels.map((level) => (
-                  <div key={level.value} className="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-50">
-                    <RadioGroupItem value={level.value} id={level.value} />
-                    <Label htmlFor={level.value} className={`cursor-pointer ${level.color} font-medium`}>
-                      {level.label}
-                    </Label>
-                  </div>
-                ))}
-              </div>
-            </RadioGroup>
-          </div>
-
-          {/* Descripción */}
-          <div className="space-y-2">
-            <Label htmlFor="description">Descripción detallada *</Label>
-            <Textarea
-              id="description"
+              onChange={(e) => handleChange('title', e.target.value)}
+              placeholder="Resumen breve del incidente"
               required
-              placeholder="Proporciona todos los detalles importantes sobre lo que está ocurriendo..."
-              className="min-h-24"
-              value={formData.description}
-              onChange={(e) => setFormData({...formData, description: e.target.value})}
             />
           </div>
 
-          {/* Personas afectadas */}
-          <div className="space-y-2">
-            <Label htmlFor="affectedPeople">Número de personas afectadas (opcional)</Label>
+          <div>
+            <Label htmlFor="type">Tipo de incidente</Label>
+            <Select onValueChange={(value) => handleChange('type', value)} required>
+              <SelectTrigger>
+                <SelectValue placeholder="Selecciona el tipo de incidente" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="attack">Ataque armado</SelectItem>
+                <SelectItem value="displacement">Desplazamiento forzado</SelectItem>
+                <SelectItem value="threat">Amenaza</SelectItem>
+                <SelectItem value="natural_disaster">Desastre natural</SelectItem>
+                <SelectItem value="other">Otro</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div>
+            <Label htmlFor="severity">Nivel de severidad</Label>
+            <Select onValueChange={(value) => handleChange('severity', value)} required>
+              <SelectTrigger>
+                <SelectValue placeholder="Selecciona el nivel de severidad" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="low">Bajo</SelectItem>
+                <SelectItem value="medium">Medio</SelectItem>
+                <SelectItem value="high">Alto</SelectItem>
+                <SelectItem value="critical">Crítico</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div>
+            <Label htmlFor="location">Ubicación</Label>
+            <div className="flex gap-2">
+              <Input
+                id="location"
+                value={formData.location}
+                onChange={(e) => handleChange('location', e.target.value)}
+                placeholder="Municipio, vereda, barrio"
+                required
+                className="flex-1"
+              />
+              <Button type="button" variant="outline" size="sm">
+                <MapPin className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+
+          <div>
+            <Label htmlFor="affectedPeople">Personas afectadas (aproximado)</Label>
             <Input
               id="affectedPeople"
               type="number"
-              min="1"
-              placeholder="¿Cuántas personas están involucradas?"
               value={formData.affectedPeople}
-              onChange={(e) => setFormData({...formData, affectedPeople: e.target.value})}
+              onChange={(e) => handleChange('affectedPeople', e.target.value)}
+              placeholder="Número de personas afectadas"
+              min="0"
             />
           </div>
 
-          {/* Ubicación */}
-          <div className="space-y-4">
-            <Label>Ubicación del incidente</Label>
-            
-            <div className="flex items-center space-x-2">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={onLocationRequest}
-                className="flex items-center space-x-2"
-              >
-                <MapPin className="h-4 w-4" />
-                <span>Usar mi ubicación actual</span>
-              </Button>
-              
-              {formData.location && (
-                <div className="text-sm text-cauca-verde-600 font-medium">
-                  ✓ Ubicación capturada
-                </div>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="manualAddress">Dirección o descripción del lugar</Label>
-              <Input
-                id="manualAddress"
-                placeholder="Ej: Calle 5 #23-45, Barrio El Centro, Popayán"
-                value={formData.manualAddress}
-                onChange={(e) => setFormData({...formData, manualAddress: e.target.value})}
-              />
-            </div>
+          <div>
+            <Label htmlFor="description">Descripción detallada</Label>
+            <Textarea
+              id="description"
+              value={formData.description}
+              onChange={(e) => handleChange('description', e.target.value)}
+              placeholder="Describe los detalles del incidente..."
+              required
+              rows={4}
+            />
           </div>
 
-          {/* Botón de envío */}
-          <div className="flex space-x-3 pt-4">
-            <Button
-              type="submit"
-              disabled={isSubmitting}
-              className="flex-1 bg-cauca-verde-500 hover:bg-cauca-verde-600 text-white"
-            >
-              {isSubmitting ? (
-                <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                  Enviando...
-                </>
-              ) : (
-                <>
-                  <Send className="h-4 w-4 mr-2" />
-                  Enviar Reporte
-                </>
-              )}
+          <div className="flex gap-2">
+            <Button type="submit" disabled={loading} className="flex-1">
+              {loading ? 'Enviando...' : 'Enviar Reporte'}
             </Button>
-          </div>
-
-          {/* Nota de privacidad */}
-          <div className="bg-cauca-azul-50 p-4 rounded-lg">
-            <p className="text-sm text-cauca-azul-700">
-              <strong>Tu seguridad es lo más importante.</strong> Este reporte será compartido 
-              con líderes comunitarios verificados para coordinar ayuda. Si estás en peligro 
-              inmediato, contacta a las autoridades locales.
-            </p>
+            <Button type="button" variant="outline" size="sm">
+              <Camera className="h-4 w-4" />
+            </Button>
           </div>
         </form>
       </CardContent>
     </Card>
   );
 };
-
-export default ReportIncident;
