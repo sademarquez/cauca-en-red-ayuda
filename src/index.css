@@ -126,46 +126,4 @@
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.2);
   }
-
-  /* Estilos para Leaflet */
-  .leaflet-container {
-    height: 100%;
-    width: 100%;
-    border-radius: 0.5rem;
-  }
-
-  .leaflet-popup-content-wrapper {
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  }
-
-  .leaflet-popup-tip {
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-
-  .custom-incident-marker {
-    border: none !important;
-    background: transparent !important;
-  }
-
-  .user-location-marker {
-    border: none !important;
-    background: transparent !important;
-  }
-
-  .region-marker {
-    border: none !important;
-    background: transparent !important;
-  }
-
-  /* Fix para los controles de zoom de Leaflet */
-  .leaflet-control-zoom a {
-    color: #374151 !important;
-    background-color: white !important;
-    border: 1px solid #d1d5db !important;
-  }
-
-  .leaflet-control-zoom a:hover {
-    background-color: #f9fafb !important;
-  }
 }

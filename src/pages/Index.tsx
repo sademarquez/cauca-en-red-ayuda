@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { toast } from '@/hooks/use-toast';
 import Header from '@/components/layout/Header';
 import LoginForm from '@/components/auth/LoginForm';
-import OpenStreetCaucaMap from '@/components/map/OpenStreetCaucaMap';
+import CaucaMap from '@/components/map/CaucaMap';
 import ReportIncident from '@/components/incidents/ReportIncident';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
@@ -275,10 +275,10 @@ const Index = () => {
       {/* Contenido principal */}
       <main className="flex-1 overflow-hidden">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full">
-          {/* Mapa principal con OpenStreetMap */}
+          {/* Mapa principal */}
           <TabsContent value="map" className="h-full m-0">
             <div className="relative h-full">
-              <OpenStreetCaucaMap
+              <CaucaMap
                 incidents={incidents}
                 userLocation={userLocation}
                 onIncidentClick={handleIncidentClick}
