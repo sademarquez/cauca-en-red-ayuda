@@ -1,0 +1,222 @@
+
+import React, { useEffect, useRef, useState } from 'react';
+import { MapPin, AlertTriangle, Users, Navigation } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Incident, UserLocation } from '@/types';
+
+interface CaucaMapProps {
+  incidents: Incident[];
+  userLocation?: UserLocation;
+  onIncidentClick: (incident: Incident) => void;
+  onLocationUpdate: (location: UserLocation) => void;
+}
+
+const CaucaMap: React.FC<CaucaMapProps> = ({
+  incidents,
+  userLocation,
+  onIncidentClick,
+  onLocationUpdate
+}) => {
+  const mapRef = useRef<HTMLDivElement>(null);
+  const [selectedIncident, setSelectedIncident] = useState<Incident | null>(null);
+  const [isLocating, setIsLocating] = useState(false);
+
+  // Coordenadas aproximadas del centro del Cauca
+  const caucaCenter = { lat: 2.4448, lng: -76.6147 };
+
+  const getIncidentIcon = (type: Incident['type']) => {
+    switch (type) {
+      case 'attack': return '🚨';
+      case 'displacement': return '🏠';
+      case 'threat': return '⚠️';
+      case 'natural_disaster': return '🌊';
+      default: return '📍';
+    }
+  };
+
+  const getIncidentColor = (type: Incident['type'], severity: Incident['severity']) => {
+    const baseColors = {
+      'attack': 'bg-red-500',
+      'displacement': 'bg-orange-500',
+      'threat': 'bg-yellow-500',
+      'natural_disaster': 'bg-blue-500',
+      'other': 'bg-gray-500'
+    };
+
+    const severityOpacity = {
+      'low': 'opacity-60',
+      'medium': 'opacity-75',
+      'high': 'opacity-90',
+      'critical': 'opacity-100'
+    };
+
+    return `${baseColors[type]} ${severityOpacity[severity]}`;
+  };
+
+  const handleGetLocation = () => {
+    setIsLocating(true);
+    
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const newLocation: UserLocation = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+            accuracy: position.coords.accuracy,
+            timestamp: new Date()
+          };
+          onLocationUpdate(newLocation);
+          setIsLocating(false);
+        },
+        (error) => {
+          console.error('Error obteniendo ubicación:', error);
+          setIsLocating(false);
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 300000
+        }
+      );
+    }
+  };
+
+  return (
+    <div className="relative w-full h-full bg-gradient-to-br from-cauca-azul-100 to-cauca-verde-100">
+      {/* Mapa simulado del Cauca */}
+      <div ref={mapRef} className="w-full h-full relative overflow-hidden rounded-lg">
+        {/* Fondo del mapa con relieve simulado */}
+        <div className="absolute inset-0 bg-gradient-to-br from-cauca-verde-200 via-cauca-azul-200 to-cauca-tierra-200">
+          {/* Simulación de montañas y ríos */}
+          <div className="absolute top-1/4 left-1/3 w-32 h-20 bg-cauca-tierra-400 rounded-full opacity-60"></div>
+          <div className="absolute top-1/2 right-1/4 w-24 h-16 bg-cauca-tierra-500 rounded-full opacity-70"></div>
+          <div className="absolute bottom-1/3 left-1/4 w-2 h-32 bg-cauca-azul-400 rounded-full opacity-80"></div>
+          <div className="absolute top-3/4 right-1/3 w-28 h-12 bg-cauca-verde-400 rounded-full opacity-50"></div>
+        </div>
+
+        {/* Marcadores de incidentes */}
+        {incidents.map((incident) => (
+          <div
+            key={incident.id}
+            className="absolute transform -translate-x-1/2 -translate-y-1/2 cursor-pointer animate-pulse-gentle"
+            style={{
+              left: `${((incident.location.lng + 77) * 100)}%`,
+              top: `${((3 - incident.location.lat) * 100)}%`
+            }}
+            onClick={() => {
+              setSelectedIncident(incident);
+              onIncidentClick(incident);
+            }}
+          >
+            <div className={`w-8 h-8 rounded-full ${getIncidentColor(incident.type, incident.severity)} flex items-center justify-center text-white text-sm shadow-lg border-2 border-white`}>
+              {getIncidentIcon(incident.type)}
+            </div>
+          </div>
+        ))}
+
+        {/* Marcador de ubicación del usuario */}
+        {userLocation && (
+          <div
+            className="absolute transform -translate-x-1/2 -translate-y-1/2 z-10"
+            style={{
+              left: `${((userLocation.lng + 77) * 100)}%`,
+              top: `${((3 - userLocation.lat) * 100)}%`
+            }}
+          >
+            <div className="w-4 h-4 bg-cauca-esperanza-500 rounded-full border-4 border-white shadow-lg animate-pulse"></div>
+            <div className="absolute -top-2 -left-2 w-8 h-8 bg-cauca-esperanza-200 rounded-full animate-ping opacity-75"></div>
+          </div>
+        )}
+
+        {/* Etiquetas de regiones */}
+        <div className="absolute top-6 left-6 text-cauca-verde-800 font-semibold text-sm bg-white/80 px-2 py-1 rounded">
+          Popayán
+        </div>
+        <div className="absolute bottom-6 right-6 text-cauca-azul-800 font-semibold text-sm bg-white/80 px-2 py-1 rounded">
+          Costa Pacífica
+        </div>
+        <div className="absolute top-1/2 right-6 text-cauca-tierra-800 font-semibold text-sm bg-white/80 px-2 py-1 rounded">
+          Cordillera
+        </div>
+      </div>
+
+      {/* Controles del mapa */}
+      <div className="absolute top-4 right-4 space-y-2">
+        <Button
+          onClick={handleGetLocation}
+          disabled={isLocating}
+          size="sm"
+          className="bg-white/90 text-cauca-verde-700 hover:bg-white shadow-lg"
+        >
+          <Navigation className={`h-4 w-4 ${isLocating ? 'animate-spin' : ''}`} />
+        </Button>
+      </div>
+
+      {/* Información del incidente seleccionado */}
+      {selectedIncident && (
+        <Card className="absolute bottom-4 left-4 right-4 max-w-sm mx-auto shadow-xl">
+          <CardContent className="p-4">
+            <div className="flex items-start justify-between mb-2">
+              <div className="flex items-center space-x-2">
+                <span className="text-lg">{getIncidentIcon(selectedIncident.type)}</span>
+                <h3 className="font-semibold text-sm">{selectedIncident.title}</h3>
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setSelectedIncident(null)}
+                className="text-gray-500 hover:text-gray-700 p-1"
+              >
+                ✕
+              </Button>
+            </div>
+            
+            <p className="text-xs text-gray-600 mb-3 line-clamp-2">
+              {selectedIncident.description}
+            </p>
+            
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <Badge 
+                  variant={selectedIncident.severity === 'critical' ? 'destructive' : 'secondary'}
+                  className="text-xs"
+                >
+                  {selectedIncident.severity === 'critical' ? 'Crítico' : 
+                   selectedIncident.severity === 'high' ? 'Alto' :
+                   selectedIncident.severity === 'medium' ? 'Medio' : 'Bajo'}
+                </Badge>
+                <span className="text-xs text-gray-500">
+                  {new Date(selectedIncident.reportedAt).toLocaleDateString()}
+                </span>
+              </div>
+              
+              {selectedIncident.verified && (
+                <Badge variant="outline" className="text-xs text-cauca-verde-600">
+                  ✓ Verificado
+                </Badge>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Estadísticas rápidas */}
+      <div className="absolute top-4 left-4 bg-white/90 rounded-lg p-3 shadow-lg">
+        <div className="flex items-center space-x-4 text-sm">
+          <div className="flex items-center space-x-1">
+            <AlertTriangle className="h-4 w-4 text-red-500" />
+            <span className="font-medium">{incidents.length}</span>
+          </div>
+          <div className="flex items-center space-x-1">
+            <Users className="h-4 w-4 text-cauca-verde-500" />
+            <span className="font-medium">Red Activa</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default CaucaMap;
