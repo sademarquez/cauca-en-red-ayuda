@@ -10,8 +10,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
-import { MapPin, AlertTriangle, Users, Plus, Home, Settings, LogOut } from 'lucide-react';
+import { MapPin, AlertTriangle, Users, Plus, Home, Settings, LogOut, Phone, Package, Shield, Siren } from 'lucide-react';
 import { Incident, UserLocation, User } from '@/types';
+import EmergencyRequest from '@/components/victims/EmergencyRequest';
+import ResourceRequest from '@/components/victims/ResourceRequest';
+import SafeZoneRequest from '@/components/victims/SafeZoneRequest';
 
 const Index = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -20,6 +23,9 @@ const Index = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('map');
   const [isReportSheetOpen, setIsReportSheetOpen] = useState(false);
+  const [isEmergencySheetOpen, setIsEmergencySheetOpen] = useState(false);
+  const [isResourceSheetOpen, setIsResourceSheetOpen] = useState(false);
+  const [isSafeZoneSheetOpen, setIsSafeZoneSheetOpen] = useState(false);
 
   const sampleIncidents: Incident[] = [
     {
@@ -157,6 +163,36 @@ const Index = () => {
     console.log('Incidente seleccionado:', incident);
   };
 
+  const handleEmergencyRequest = async (request: any) => {
+    console.log('Solicitud de emergencia:', request);
+    setIsEmergencySheetOpen(false);
+    
+    toast({
+      title: "Solicitud de emergencia enviada",
+      description: "Tu solicitud ha sido enviada a líderes y organizaciones de apoyo. Te contactarán pronto.",
+    });
+  };
+
+  const handleResourceRequest = async (request: any) => {
+    console.log('Solicitud de recursos:', request);
+    setIsResourceSheetOpen(false);
+    
+    toast({
+      title: "Solicitud de recursos enviada",
+      description: "Las organizaciones de apoyo revisarán tu solicitud y te contactarán para coordinar la entrega.",
+    });
+  };
+
+  const handleSafeZoneRequest = async (request: any) => {
+    console.log('Solicitud de zona segura:', request);
+    setIsSafeZoneSheetOpen(false);
+    
+    toast({
+      title: "Solicitud de refugio enviada",
+      description: "Tu solicitud ha sido marcada como urgente. Las autoridades y organizaciones de apoyo fueron notificadas.",
+    });
+  };
+
   // Si no hay usuario logueado, mostrar login
   if (!user) {
     return <LoginForm onLogin={handleLogin} />;
@@ -208,6 +244,18 @@ const Index = () => {
             >
               <AlertTriangle className="h-4 w-4 mr-3" />
               Mis Reportes
+            </Button>
+
+            <Button
+              variant="ghost"
+              className="w-full justify-start"
+              onClick={() => {
+                setActiveTab('victim-support');
+                setIsMenuOpen(false);
+              }}
+            >
+              <Users className="h-4 w-4 mr-3" />
+              Apoyo para Víctimas
             </Button>
 
             {user.role === 'leader' && (
@@ -352,6 +400,97 @@ const Index = () => {
             </div>
           </TabsContent>
 
+          {/* Nueva pestaña de apoyo para víctimas */}
+          <TabsContent value="victim-support" className="h-full m-0 p-4 overflow-y-auto">
+            <div className="space-y-6">
+              <div className="text-center">
+                <h2 className="text-2xl font-bold cauca-text-gradient mb-2">Apoyo para Víctimas</h2>
+                <p className="text-gray-600">
+                  Solicita ayuda inmediata según tu situación. Todas las solicitudes son tratadas con prioridad.
+                </p>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {/* Emergencia médica/evacuación */}
+                <Card className="hover:shadow-lg transition-shadow cursor-pointer border-red-200" 
+                      onClick={() => setIsEmergencySheetOpen(true)}>
+                  <CardContent className="p-6 text-center">
+                    <div className="w-16 h-16 mx-auto mb-4 bg-red-100 rounded-full flex items-center justify-center">
+                      <Siren className="h-8 w-8 text-red-600" />
+                    </div>
+                    <h3 className="font-semibold text-red-700 mb-2">Emergencia</h3>
+                    <p className="text-sm text-gray-600">
+                      Solicita ayuda médica, evacuación o asistencia urgente
+                    </p>
+                    <Badge className="mt-3 bg-red-600 text-white">URGENTE</Badge>
+                  </CardContent>
+                </Card>
+
+                {/* Recursos básicos */}
+                <Card className="hover:shadow-lg transition-shadow cursor-pointer border-blue-200"
+                      onClick={() => setIsResourceSheetOpen(true)}>
+                  <CardContent className="p-6 text-center">
+                    <div className="w-16 h-16 mx-auto mb-4 bg-blue-100 rounded-full flex items-center justify-center">
+                      <Package className="h-8 w-8 text-blue-600" />
+                    </div>
+                    <h3 className="font-semibold text-blue-700 mb-2">Recursos</h3>
+                    <p className="text-sm text-gray-600">
+                      Solicita alimentos, agua, ropa y otros recursos básicos
+                    </p>
+                    <Badge variant="secondary" className="mt-3">APOYO</Badge>
+                  </CardContent>
+                </Card>
+
+                {/* Refugio seguro */}
+                <Card className="hover:shadow-lg transition-shadow cursor-pointer border-yellow-200"
+                      onClick={() => setIsSafeZoneSheetOpen(true)}>
+                  <CardContent className="p-6 text-center">
+                    <div className="w-16 h-16 mx-auto mb-4 bg-yellow-100 rounded-full flex items-center justify-center">
+                      <Shield className="h-8 w-8 text-yellow-600" />
+                    </div>
+                    <h3 className="font-semibold text-yellow-700 mb-2">Refugio</h3>
+                    <p className="text-sm text-gray-600">
+                      Solicita un lugar seguro donde quedarte temporalmente
+                    </p>
+                    <Badge className="mt-3 bg-yellow-600 text-white">PROTECCIÓN</Badge>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Información de contactos de emergencia */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2">
+                    <Phone className="h-5 w-5" />
+                    <span>Contactos de Emergencia</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <h4 className="font-medium">Emergencias Generales</h4>
+                      <ul className="text-sm space-y-1">
+                        <li>• Policía: <strong>123</strong></li>
+                        <li>• Bomberos: <strong>119</strong></li>
+                        <li>• Cruz Roja: <strong>132</strong></li>
+                        <li>• Defensa Civil: <strong>144</strong></li>
+                      </ul>
+                    </div>
+                    <div className="space-y-2">
+                      <h4 className="font-medium">Apoyo Especializado</h4>
+                      <ul className="text-sm space-y-1">
+                        <li>• Violencia: <strong>155</strong></li>
+                        <li>• Defensoría: <strong>018000-914814</strong></li>
+                        <li>• ICBF: <strong>141</strong></li>
+                        <li>• Medicina Legal: <strong>018000-914862</strong></li>
+                      </ul>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
           {/* Red del líder */}
           {user.role === 'leader' && (
             <TabsContent value="network" className="h-full m-0 p-4 overflow-y-auto">
@@ -444,6 +583,54 @@ const Index = () => {
           </TabsContent>
         </Tabs>
       </main>
+
+      {/* Sheets para formularios de víctimas */}
+      <Sheet open={isEmergencySheetOpen} onOpenChange={setIsEmergencySheetOpen}>
+        <SheetContent side="bottom" className="h-[90vh] overflow-y-auto">
+          <div className="container mx-auto py-6">
+            <EmergencyRequest
+              onSubmit={handleEmergencyRequest}
+              user={user}
+            />
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      <Sheet open={isResourceSheetOpen} onOpenChange={setIsResourceSheetOpen}>
+        <SheetContent side="bottom" className="h-[90vh] overflow-y-auto">
+          <div className="container mx-auto py-6">
+            <ResourceRequest
+              onSubmit={handleResourceRequest}
+              user={user}
+            />
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      <Sheet open={isSafeZoneSheetOpen} onOpenChange={setIsSafeZoneSheetOpen}>
+        <SheetContent side="bottom" className="h-[90vh] overflow-y-auto">
+          <div className="container mx-auto py-6">
+            <SafeZoneRequest
+              onSubmit={handleSafeZoneRequest}
+              user={user}
+            />
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      {/* Sheet para reportar incidente */}
+      <Sheet open={isReportSheetOpen} onOpenChange={setIsReportSheetOpen}>
+        <SheetContent side="bottom" className="h-[90vh] overflow-y-auto">
+          <div className="container mx-auto py-6">
+            <ReportIncident
+              userLocation={userLocation}
+              onSubmit={handleIncidentSubmit}
+              onLocationRequest={handleLocationRequest}
+              user={user}
+            />
+          </div>
+        </SheetContent>
+      </Sheet>
     </div>
   );
 };
