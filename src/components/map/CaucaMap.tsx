@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef, useState } from 'react';
 import { MapPin, AlertTriangle, Users, Navigation, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -26,6 +25,7 @@ const CaucaMap: React.FC<CaucaMapProps> = ({
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [selectedIncident, setSelectedIncident] = useState<Incident | null>(null);
   const [isLocating, setIsLocating] = useState(false);
+  const [currentMapUrl, setCurrentMapUrl] = useState('');
 
   // Límites precisos del departamento del Cauca
   const caucaBounds = {
@@ -37,6 +37,52 @@ const CaucaMap: React.FC<CaucaMapProps> = ({
 
   // Centro exacto del departamento del Cauca
   const caucaCenter = { lat: 2.6, lng: -76.75 };
+
+  // Función para generar URL del mapa con zoom automático
+  const generateMapUrl = () => {
+    let center = caucaCenter;
+    let zoomLevel = 8; // Zoom por defecto para todo el Cauca
+    
+    // Si hay usuario con región, centrar en su municipio
+    if (user?.region) {
+      const userCoords = getCoordsForRegion(user.region);
+      center = { lat: userCoords.lat, lng: userCoords.lng };
+      zoomLevel = 12; // Zoom más cercano para el municipio
+    }
+    // Si hay ubicación GPS del usuario, usar esa
+    else if (userLocation && 
+             userLocation.lat >= caucaBounds.south && userLocation.lat <= caucaBounds.north &&
+             userLocation.lng >= caucaBounds.west && userLocation.lng <= caucaBounds.east) {
+      center = { lat: userLocation.lat, lng: userLocation.lng };
+      zoomLevel = 14; // Zoom muy cercano para ubicación GPS
+    }
+
+    // Calcular los límites del área visible basado en el zoom
+    const latOffset = (caucaBounds.north - caucaBounds.south) / (zoomLevel / 2);
+    const lngOffset = (caucaBounds.east - caucaBounds.west) / (zoomLevel / 2);
+
+    const viewBounds = {
+      north: Math.min(caucaBounds.north, center.lat + latOffset),
+      south: Math.max(caucaBounds.south, center.lat - latOffset),
+      east: Math.min(caucaBounds.east, center.lng + lngOffset),
+      west: Math.max(caucaBounds.west, center.lng - lngOffset)
+    };
+
+    return `https://www.openstreetmap.org/export/embed.html?bbox=${viewBounds.west},${viewBounds.south},${viewBounds.east},${viewBounds.north}&layer=mapnik&marker=${center.lat},${center.lng}`;
+  };
+
+  // Actualizar URL del mapa cuando cambie la ubicación del usuario
+  useEffect(() => {
+    const newMapUrl = generateMapUrl();
+    setCurrentMapUrl(newMapUrl);
+  }, [user?.region, userLocation]);
+
+  // Inicializar URL del mapa
+  useEffect(() => {
+    if (!currentMapUrl) {
+      setCurrentMapUrl(generateMapUrl());
+    }
+  }, []);
 
   const getIncidentIcon = (type: Incident['type']) => {
     switch (type) {
@@ -99,9 +145,6 @@ const CaucaMap: React.FC<CaucaMapProps> = ({
     };
   };
 
-  // URL del mapa centrado específicamente en el Cauca con bordes marcados
-  const mapUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${caucaBounds.west},${caucaBounds.south},${caucaBounds.east},${caucaBounds.north}&layer=mapnik&marker=${caucaCenter.lat},${caucaCenter.lng}`;
-
   // Filtrar incidentes dentro del territorio del Cauca
   const getCaucaIncidents = () => {
     return incidents.filter(incident => {
@@ -131,18 +174,20 @@ const CaucaMap: React.FC<CaucaMapProps> = ({
 
   return (
     <div className="relative w-full h-full bg-gradient-to-br from-green-50 via-yellow-50 to-red-50 overflow-hidden">
-      {/* Mapa fijo del Cauca - NO INTERACTIVO */}
+      {/* Mapa con zoom automático del Cauca - NO INTERACTIVO */}
       <div ref={mapRef} className="w-full h-full relative rounded-2xl overflow-hidden shadow-2xl border-4 border-green-600/50">
-        <iframe
-          ref={iframeRef}
-          src={mapUrl}
-          className="w-full h-full border-0 pointer-events-none"
-          style={{ 
-            filter: 'sepia(0.1) saturate(1.3) contrast(1.2) brightness(0.95)',
-            minHeight: '400px'
-          }}
-          title="Mapa del Departamento del Cauca - Solo Visualización"
-        />
+        {currentMapUrl && (
+          <iframe
+            ref={iframeRef}
+            src={currentMapUrl}
+            className="w-full h-full border-0 pointer-events-none"
+            style={{ 
+              filter: 'sepia(0.1) saturate(1.3) contrast(1.2) brightness(0.95)',
+              minHeight: '400px'
+            }}
+            title="Mapa del Departamento del Cauca - Zoom Automático"
+          />
+        )}
         
         {/* Overlay con bordes del Cauca muy marcados */}
         <div className="absolute inset-0 pointer-events-none">
@@ -301,7 +346,9 @@ const CaucaMap: React.FC<CaucaMapProps> = ({
       <div className="absolute top-6 left-6 bg-white/98 rounded-3xl p-6 shadow-2xl border-2 border-green-200 backdrop-blur-md z-50 min-w-80">
         <div className="text-center mb-4">
           <h2 className="text-2xl font-bold text-green-800 mb-2">🏛️ Departamento del Cauca</h2>
-          <p className="text-sm text-gray-600">Sistema de Alertas en Tiempo Real</p>
+          <p className="text-sm text-gray-600">
+            {user?.region ? `Vista de ${user.region}` : 'Sistema de Alertas en Tiempo Real'}
+          </p>
         </div>
         
         <div className="grid grid-cols-1 gap-4">
@@ -320,11 +367,15 @@ const CaucaMap: React.FC<CaucaMapProps> = ({
           <div className="flex items-center justify-between bg-blue-50 p-4 rounded-2xl border border-blue-200">
             <div className="flex items-center space-x-3">
               <div className="w-12 h-12 rounded-2xl bg-gradient-to-r from-blue-500 to-blue-400 flex items-center justify-center">
-                <Users className="h-6 w-6 text-white" />
+                <Eye className="h-6 w-6 text-white" />
               </div>
               <div>
-                <p className="font-bold text-blue-700 text-lg">EN VIVO</p>
-                <p className="text-sm text-blue-600 font-semibold">Monitoreo Activo</p>
+                <p className="font-bold text-blue-700 text-lg">
+                  {user?.region ? 'ZOOM AUTO' : 'EN VIVO'}
+                </p>
+                <p className="text-sm text-blue-600 font-semibold">
+                  {user?.region ? 'Vista Cercana' : 'Monitoreo Activo'}
+                </p>
               </div>
             </div>
           </div>
@@ -356,7 +407,9 @@ const CaucaMap: React.FC<CaucaMapProps> = ({
 
       {/* Título identificativo del mapa */}
       <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-green-800 to-green-600 text-white px-6 py-2 rounded-full shadow-xl z-40">
-        <p className="font-bold text-sm">🗺️ MAPA OFICIAL DEL CAUCA - SOLO VISUALIZACIÓN</p>
+        <p className="font-bold text-sm">
+          🗺️ MAPA DEL CAUCA - {user?.region ? `ZOOM: ${user.region.toUpperCase()}` : 'VISTA GENERAL'}
+        </p>
       </div>
     </div>
   );
