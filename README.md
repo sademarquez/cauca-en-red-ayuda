@@ -1,73 +1,200 @@
-# Welcome to your Lovable project
 
-## Project info
+# CaucaConecta - Red de Apoyo y Seguridad
 
-**URL**: https://lovable.dev/projects/d810ae8e-b867-4c2c-a53e-4cc0debd9d81
+PWA para víctimas del conflicto y ciudadanos del Cauca. Reporta incidentes, conecta con líderes comunitarios y construye redes de apoyo.
 
-## How can I edit this code?
+## 🚀 Despliegue en Netlify
 
-There are several ways of editing your application.
+### Pasos para desplegar:
 
-**Use Lovable**
+1. **Hacer fork o clonar el repositorio**
+2. **Conectar con Netlify**:
+   - Ve a [netlify.com](https://netlify.com)
+   - Conecta tu repositorio de GitHub
+   - Netlify detectará automáticamente la configuración
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/d810ae8e-b867-4c2c-a53e-4cc0debd9d81) and start prompting.
+3. **Configurar variables de entorno en Netlify**:
+   - Ve a Site settings → Environment variables
+   - Agrega las variables del archivo `.env.example`
 
-Changes made via Lovable will be committed automatically to this repo.
+### Variables de entorno necesarias:
 
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+#### Firebase (Base de datos recomendada)
+```
+VITE_FIREBASE_API_KEY=tu_api_key
+VITE_FIREBASE_AUTH_DOMAIN=tu_proyecto.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=tu_proyecto_id
+VITE_FIREBASE_STORAGE_BUCKET=tu_proyecto.appspot.com
+VITE_FIREBASE_MESSAGING_SENDER_ID=123456789
+VITE_FIREBASE_APP_ID=1:123456789:web:abcdef123456
 ```
 
-**Edit a file directly in GitHub**
+#### Google Maps (Para mapa real)
+```
+VITE_GOOGLE_MAPS_API_KEY=tu_google_maps_key
+```
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## 🔑 Claves y APIs necesarias
 
-**Use GitHub Codespaces**
+### 1. Firebase (Google)
+- **Dónde obtenerla**: [Firebase Console](https://console.firebase.google.com/)
+- **Pasos**:
+  1. Crear proyecto en Firebase
+  2. Ir a Project Settings → General
+  3. Scroll hasta "Your apps" → Web App
+  4. Copiar la configuración
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+### 2. Google Maps API
+- **Dónde obtenerla**: [Google Cloud Console](https://console.cloud.google.com/)
+- **Pasos**:
+  1. Crear proyecto en Google Cloud
+  2. Habilitar Maps JavaScript API
+  3. Crear credenciales → API Key
+  4. Restringir la key a tu dominio
 
-## What technologies are used for this project?
+### 3. Mapbox (Alternativa a Google Maps)
+- **Dónde obtenerla**: [Mapbox](https://mapbox.com/)
+- **Pasos**:
+  1. Crear cuenta gratuita
+  2. Ir a Account → Access tokens
+  3. Usar el token público por defecto
 
-This project is built with:
+## 📊 Base de datos con Firebase
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+### Configuración de Firestore:
 
-## How can I deploy this project?
+```javascript
+// Colección: usuarios
+{
+  id: "user_id",
+  nombre: "string",
+  email: "string",
+  telefono: "string",
+  rol: "citizen" | "leader",
+  region: "string",
+  verificado: boolean,
+  creadoEn: timestamp,
+  ultimoAcceso: timestamp
+}
 
-Simply open [Lovable](https://lovable.dev/projects/d810ae8e-b867-4c2c-a53e-4cc0debd9d81) and click on Share -> Publish.
+// Colección: incidentes
+{
+  id: "incident_id",
+  titulo: "string",
+  descripcion: "string",
+  tipo: "attack" | "displacement" | "threat" | "natural_disaster" | "other",
+  estado: "active" | "resolved" | "investigating",
+  ubicacion: {
+    latitud: number,
+    longitud: number,
+    direccion: "string"
+  },
+  reportadoPor: "user_id",
+  reportadoEn: timestamp,
+  severidad: "low" | "medium" | "high" | "critical",
+  personasAfectadas: number,
+  imagenes: ["url1", "url2"],
+  verificado: boolean,
+  verificadoPor: "user_id"
+}
 
-## Can I connect a custom domain to my Lovable project?
+// Colección: redes_comunitarias
+{
+  id: "network_id",
+  liderId: "user_id",
+  miembros: ["user_id1", "user_id2"],
+  region: "string",
+  nombre: "string",
+  descripcion: "string",
+  creadoEn: timestamp,
+  activa: boolean
+}
+```
 
-Yes, you can!
+### Reglas de seguridad de Firestore:
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+```javascript
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Usuarios pueden leer todos los perfiles
+    match /usuarios/{userId} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Incidentes públicos
+    match /incidentes/{incidentId} {
+      allow read: if true;
+      allow create: if request.auth != null;
+      allow update: if request.auth != null && 
+        (resource.data.reportadoPor == request.auth.uid ||
+         get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data.rol == 'leader');
+    }
+    
+    // Redes comunitarias
+    match /redes_comunitarias/{networkId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+  }
+}
+```
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+## 🛠️ Desarrollo local
+
+```bash
+# Instalar dependencias
+npm install
+
+# Ejecutar en desarrollo
+npm run dev
+
+# Construir para producción
+npm run build
+
+# Vista previa de la build
+npm run preview
+```
+
+## 📁 Estructura del proyecto
+
+```
+src/
+├── components/         # Componentes React
+│   ├── auth/          # Autenticación
+│   ├── incidents/     # Gestión de incidentes
+│   ├── map/           # Componentes del mapa
+│   └── ui/            # Componentes de UI
+├── hooks/             # Custom hooks
+├── lib/               # Utilidades y configuración
+├── pages/             # Páginas principales
+├── types/             # Definiciones de TypeScript
+└── utils/             # Funciones auxiliares
+```
+
+## 🔐 Seguridad
+
+- Todas las API keys deben configurarse como variables de entorno
+- Firebase maneja la autenticación y autorización
+- Las reglas de Firestore protegen los datos sensibles
+- HTTPS habilitado por defecto en Netlify
+
+## 📱 PWA Features
+
+- Funciona offline
+- Instalable en móviles
+- Notificaciones push (con Firebase)
+- Geolocalización para reportes precisos
+
+## 🤝 Contribuir
+
+1. Fork el repositorio
+2. Crear una rama para tu feature
+3. Commit tus cambios
+4. Push a la rama
+5. Crear un Pull Request
+
+## 📄 Licencia
+
+MIT License - Ver archivo LICENSE para más detalles.

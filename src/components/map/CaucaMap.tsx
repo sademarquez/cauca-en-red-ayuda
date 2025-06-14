@@ -50,11 +50,11 @@ const CaucaMap: React.FC<CaucaMapProps> = ({
 
   const getIncidentColor = (type: Incident['type'], severity: Incident['severity']) => {
     const baseColors = {
-      'attack': 'bg-red-500',
-      'displacement': 'bg-orange-500',
-      'threat': 'bg-yellow-500',
-      'natural_disaster': 'bg-blue-500',
-      'other': 'bg-cauca-morado-500'
+      'attack': 'bg-cauca-rojo-500',
+      'displacement': 'bg-cauca-naranja-500',
+      'threat': 'bg-cauca-naranja-400',
+      'natural_disaster': 'bg-cauca-azul-500',
+      'other': 'bg-cauca-gris-500'
     };
 
     const severityOpacity = {
@@ -120,18 +120,18 @@ const CaucaMap: React.FC<CaucaMapProps> = ({
   };
 
   return (
-    <div className="relative w-full h-full bg-gradient-to-br from-cauca-morado-50 to-cauca-violeta-100">
+    <div className="relative w-full h-full bg-gradient-to-br from-cauca-gris-50 to-cauca-azul-100">
       {/* Mapa base del Cauca */}
       <div ref={mapRef} className="w-full h-full relative overflow-hidden rounded-lg">
         {/* Fondo del mapa con relieve */}
-        <div className="absolute inset-0 bg-gradient-to-br from-cauca-morado-200 via-cauca-violeta-200 to-cauca-azul-200">
+        <div className="absolute inset-0 bg-gradient-to-br from-cauca-gris-200 via-cauca-azul-200 to-cauca-verde-200">
           {/* Simulación del relieve caucano */}
           <div className="absolute inset-0">
             {/* Cordillera Central */}
-            <div className="absolute top-0 left-1/4 w-1/2 h-full bg-gradient-to-b from-cauca-tierra-300 to-cauca-tierra-400 opacity-60 rounded-full transform rotate-12"></div>
+            <div className="absolute top-0 left-1/4 w-1/2 h-full bg-gradient-to-b from-cauca-gris-300 to-cauca-gris-400 opacity-60 rounded-full transform rotate-12"></div>
             
             {/* Cordillera Occidental */}
-            <div className="absolute top-0 right-1/4 w-1/3 h-3/4 bg-gradient-to-b from-cauca-tierra-400 to-cauca-tierra-500 opacity-50 rounded-full transform -rotate-6"></div>
+            <div className="absolute top-0 right-1/4 w-1/3 h-3/4 bg-gradient-to-b from-cauca-gris-400 to-cauca-gris-500 opacity-50 rounded-full transform -rotate-6"></div>
             
             {/* Río Cauca */}
             <div className="absolute top-1/4 left-1/3 w-1 h-1/2 bg-cauca-azul-400 opacity-80 rounded-full"></div>
@@ -142,14 +142,14 @@ const CaucaMap: React.FC<CaucaMapProps> = ({
             {/* Región del usuario resaltada */}
             {user?.region && (
               <div 
-                className="absolute animate-pulse bg-cauca-esperanza-400 rounded-full opacity-30 w-20 h-20 transition-all duration-1000" 
+                className="absolute animate-pulse bg-cauca-verde-400 rounded-full opacity-30 w-20 h-20 transition-all duration-1000" 
                 style={{
                   left: `${latLngToPosition(getCoordsForRegion(user.region).lat, getCoordsForRegion(user.region).lng).x}%`,
                   top: `${latLngToPosition(getCoordsForRegion(user.region).lat, getCoordsForRegion(user.region).lng).y}%`,
                   transform: 'translate(-50%, -50%)'
                 }}
               >
-                <div className="absolute inset-0 bg-cauca-esperanza-500 rounded-full animate-ping opacity-50"></div>
+                <div className="absolute inset-0 bg-cauca-verde-500 rounded-full animate-ping opacity-50"></div>
               </div>
             )}
           </div>
@@ -187,26 +187,26 @@ const CaucaMap: React.FC<CaucaMapProps> = ({
               top: `${latLngToPosition(userLocation.lat, userLocation.lng).y}%`
             }}
           >
-            <div className="w-5 h-5 bg-cauca-esperanza-500 rounded-full border-4 border-white shadow-lg animate-pulse"></div>
-            <div className="absolute -top-3 -left-3 w-11 h-11 bg-cauca-esperanza-200 rounded-full animate-ping opacity-75"></div>
+            <div className="w-5 h-5 bg-cauca-verde-500 rounded-full border-4 border-white shadow-lg animate-pulse"></div>
+            <div className="absolute -top-3 -left-3 w-11 h-11 bg-cauca-verde-200 rounded-full animate-ping opacity-75"></div>
           </div>
         )}
 
         {/* Etiquetas de ciudades principales */}
-        <div className="absolute top-1/3 left-1/2 transform -translate-x-1/2 text-cauca-morado-800 font-bold text-lg bg-white/90 px-3 py-1 rounded-full shadow-lg">
+        <div className="absolute top-1/3 left-1/2 transform -translate-x-1/2 text-cauca-gris-800 font-bold text-lg bg-white/90 px-3 py-1 rounded-full shadow-lg">
           Popayán
         </div>
         <div className="absolute bottom-1/4 left-1/4 text-cauca-azul-800 font-semibold text-sm bg-white/80 px-2 py-1 rounded">
           Guapi
         </div>
-        <div className="absolute top-1/4 right-1/3 text-cauca-tierra-800 font-semibold text-sm bg-white/80 px-2 py-1 rounded">
+        <div className="absolute top-1/4 right-1/3 text-cauca-gris-800 font-semibold text-sm bg-white/80 px-2 py-1 rounded">
           Silvia
         </div>
         
         {/* Etiqueta especial para la región del usuario */}
         {user?.region && user.region !== 'Popayán' && (
           <div 
-            className="absolute text-cauca-esperanza-800 font-bold text-sm bg-cauca-esperanza-100 px-3 py-1 rounded-full shadow-lg border-2 border-cauca-esperanza-300"
+            className="absolute text-cauca-verde-800 font-bold text-sm bg-cauca-verde-100 px-3 py-1 rounded-full shadow-lg border-2 border-cauca-verde-300"
             style={{
               left: `${latLngToPosition(getCoordsForRegion(user.region).lat, getCoordsForRegion(user.region).lng).x}%`,
               top: `${latLngToPosition(getCoordsForRegion(user.region).lat, getCoordsForRegion(user.region).lng).y - 8}%`,
@@ -224,7 +224,7 @@ const CaucaMap: React.FC<CaucaMapProps> = ({
           onClick={handleGetLocation}
           disabled={isLocating}
           size="sm"
-          className="bg-white/95 text-cauca-morado-700 hover:bg-white shadow-lg border border-cauca-morado-200"
+          className="bg-white/95 text-cauca-gris-700 hover:bg-white shadow-lg border border-cauca-gris-200"
         >
           <Navigation className={`h-4 w-4 ${isLocating ? 'animate-spin' : ''}`} />
         </Button>
@@ -233,7 +233,7 @@ const CaucaMap: React.FC<CaucaMapProps> = ({
           <Button
             onClick={handleRecenterToUser}
             size="sm"
-            className="bg-cauca-morado-500 text-white hover:bg-cauca-morado-600 shadow-lg"
+            className="bg-cauca-azul-500 text-white hover:bg-cauca-azul-600 shadow-lg"
             title={`Volver a ${user.region}`}
           >
             🏠
@@ -243,12 +243,12 @@ const CaucaMap: React.FC<CaucaMapProps> = ({
 
       {/* Información del incidente seleccionado */}
       {selectedIncident && (
-        <Card className="absolute bottom-4 left-4 right-4 max-w-sm mx-auto shadow-xl border-cauca-morado-200 bg-white/95 backdrop-blur-sm">
+        <Card className="absolute bottom-4 left-4 right-4 max-w-sm mx-auto shadow-xl border-cauca-gris-200 bg-white/95 backdrop-blur-sm">
           <CardContent className="p-4">
             <div className="flex items-start justify-between mb-2">
               <div className="flex items-center space-x-2">
                 <span className="text-xl">{getIncidentIcon(selectedIncident.type)}</span>
-                <h3 className="font-semibold text-sm text-cauca-morado-800">{selectedIncident.title}</h3>
+                <h3 className="font-semibold text-sm text-cauca-gris-800">{selectedIncident.title}</h3>
               </div>
               <Button
                 variant="ghost"
@@ -280,7 +280,7 @@ const CaucaMap: React.FC<CaucaMapProps> = ({
               </div>
               
               {selectedIncident.verified && (
-                <Badge variant="outline" className="text-xs text-cauca-morado-600 border-cauca-morado-300">
+                <Badge variant="outline" className="text-xs text-cauca-azul-600 border-cauca-azul-300">
                   ✓ Verificado
                 </Badge>
               )}
@@ -290,20 +290,20 @@ const CaucaMap: React.FC<CaucaMapProps> = ({
       )}
 
       {/* Estadísticas rápidas */}
-      <div className="absolute top-4 left-4 bg-white/95 rounded-lg p-3 shadow-lg border border-cauca-morado-200 backdrop-blur-sm">
+      <div className="absolute top-4 left-4 bg-white/95 rounded-lg p-3 shadow-lg border border-cauca-gris-200 backdrop-blur-sm">
         <div className="flex items-center space-x-4 text-sm">
           <div className="flex items-center space-x-1">
-            <AlertTriangle className="h-4 w-4 text-red-500" />
-            <span className="font-medium text-cauca-morado-800">{incidents.length}</span>
+            <AlertTriangle className="h-4 w-4 text-cauca-rojo-500" />
+            <span className="font-medium text-cauca-gris-800">{incidents.length}</span>
           </div>
           <div className="flex items-center space-x-1">
-            <Users className="h-4 w-4 text-cauca-morado-500" />
-            <span className="font-medium text-cauca-morado-700">Red Activa</span>
+            <Users className="h-4 w-4 text-cauca-azul-500" />
+            <span className="font-medium text-cauca-gris-700">Red Activa</span>
           </div>
           {user?.region && (
             <div className="flex items-center space-x-1">
-              <MapPin className="h-4 w-4 text-cauca-esperanza-500" />
-              <span className="font-medium text-xs text-cauca-esperanza-700">{user.region}</span>
+              <MapPin className="h-4 w-4 text-cauca-verde-500" />
+              <span className="font-medium text-xs text-cauca-verde-700">{user.region}</span>
             </div>
           )}
         </div>
