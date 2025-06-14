@@ -8,14 +8,27 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertTriangle, MapPin, Camera } from "lucide-react";
+import { Incident, UserLocation, User } from '@/types';
 
-export const ReportIncident = () => {
+interface ReportIncidentProps {
+  userLocation?: UserLocation;
+  onSubmit: (incident: Omit<Incident, 'id' | 'reportedAt' | 'verified' | 'verifiedBy'>) => Promise<void>;
+  onLocationRequest: () => void;
+  user: User;
+}
+
+export const ReportIncident: React.FC<ReportIncidentProps> = ({
+  userLocation,
+  onSubmit,
+  onLocationRequest,
+  user
+}) => {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    type: '',
-    location: '',
-    severity: '',
+    type: '' as Incident['type'] | '',
+    location: userLocation ? `${userLocation.lat}, ${userLocation.lng}` : '',
+    severity: '' as Incident['severity'] | '',
     affectedPeople: ''
   });
   const [loading, setLoading] = useState(false);
@@ -23,25 +36,40 @@ export const ReportIncident = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!formData.type || !formData.severity) return;
+    
     setLoading(true);
 
     try {
-      // Aquí iría la lógica para enviar el reporte a Firebase
-      console.log('Enviando reporte:', formData);
+      const incident: Omit<Incident, 'id' | 'reportedAt' | 'verified' | 'verifiedBy'> = {
+        title: formData.title,
+        description: formData.description,
+        type: formData.type,
+        status: 'active',
+        location: {
+          lat: userLocation?.lat || 2.4448,
+          lng: userLocation?.lng || -76.6147,
+          address: formData.location || user.region,
+          municipality: user.region
+        },
+        reportedBy: user.id,
+        severity: formData.severity,
+        affectedPeople: formData.affectedPeople ? parseInt(formData.affectedPeople) : undefined
+      };
+
+      await onSubmit(incident);
       
-      setTimeout(() => {
-        setLoading(false);
-        setSuccess(true);
-        // Resetear formulario
-        setFormData({
-          title: '',
-          description: '',
-          type: '',
-          location: '',
-          severity: '',
-          affectedPeople: ''
-        });
-      }, 1000);
+      setLoading(false);
+      setSuccess(true);
+      // Resetear formulario
+      setFormData({
+        title: '',
+        description: '',
+        type: '',
+        location: userLocation ? `${userLocation.lat}, ${userLocation.lng}` : '',
+        severity: '',
+        affectedPeople: ''
+      });
     } catch (error) {
       setLoading(false);
       console.error('Error enviando reporte:', error);
@@ -56,7 +84,7 @@ export const ReportIncident = () => {
     <Card className="w-full max-w-2xl mx-auto">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <AlertTriangle className="h-5 w-5 text-cauca-rojo-500" />
+          <AlertTriangle className="h-5 w-5 text-red-500" />
           Reportar Incidente
         </CardTitle>
         <CardDescription>
@@ -65,8 +93,8 @@ export const ReportIncident = () => {
       </CardHeader>
       <CardContent>
         {success && (
-          <Alert className="mb-4 border-cauca-verde-200 bg-cauca-verde-50">
-            <AlertDescription className="text-cauca-verde-700">
+          <Alert className="mb-4 border-green-200 bg-green-50">
+            <AlertDescription className="text-green-700">
               Reporte enviado exitosamente. Gracias por contribuir a la seguridad de la comunidad.
             </AlertDescription>
           </Alert>
@@ -126,7 +154,7 @@ export const ReportIncident = () => {
                 required
                 className="flex-1"
               />
-              <Button type="button" variant="outline" size="sm">
+              <Button type="button" variant="outline" size="sm" onClick={onLocationRequest}>
                 <MapPin className="h-4 w-4" />
               </Button>
             </div>

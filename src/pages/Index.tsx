@@ -70,18 +70,16 @@ const Index = () => {
   ];
 
   useEffect(() => {
-    // Cargar incidentes de ejemplo al iniciar
     setIncidents(sampleIncidents);
   }, []);
 
-  const handleLogin = (userData: any) => {
+  const handleLogin = (userData: User) => {
     setUser(userData);
     toast({
       title: "¡Bienvenido a CaucaConecta!",
       description: `Hola ${userData.name}, ya puedes usar todas las funciones de la aplicación.`,
     });
 
-    // Si el usuario es un líder, mostrar mensaje especial
     if (userData.role === 'leader') {
       setTimeout(() => {
         toast({
@@ -150,7 +148,6 @@ const Index = () => {
       description: "Tu reporte ha sido enviado. Los líderes comunitarios serán notificados.",
     });
 
-    // Simular notificación a líderes
     setTimeout(() => {
       toast({
         title: "Reporte en revisión",
@@ -211,7 +208,7 @@ const Index = () => {
         <SheetContent side="left" className="w-80">
           <SheetHeader>
             <SheetTitle className="flex items-center space-x-2">
-              <div className="w-8 h-8 rounded-full cauca-gradient flex items-center justify-center">
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-green-600 to-blue-600 flex items-center justify-center">
                 <span className="text-white font-bold text-sm">CC</span>
               </div>
               <span>CaucaConecta</span>
@@ -301,8 +298,8 @@ const Index = () => {
             <Card>
               <CardContent className="p-4">
                 <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 rounded-full bg-cauca-morado-100 flex items-center justify-center">
-                    <span className="text-cauca-morado-600 font-semibold">
+                  <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
+                    <span className="text-purple-600 font-semibold">
                       {user.name.charAt(0).toUpperCase()}
                     </span>
                   </div>
@@ -339,7 +336,7 @@ const Index = () => {
                 <SheetTrigger asChild>
                   <Button
                     size="lg"
-                    className="fixed bottom-6 right-6 rounded-full w-14 h-14 bg-cauca-esperanza-500 hover:bg-cauca-esperanza-600 shadow-lg z-50"
+                    className="fixed bottom-6 right-6 rounded-full w-14 h-14 bg-gradient-to-br from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 shadow-lg z-50"
                   >
                     <Plus className="h-6 w-6" />
                   </Button>
