@@ -4,13 +4,14 @@ import { Header } from '@/components/layout/Header';
 import { LoginForm } from '@/components/auth/LoginForm';
 import CaucaMap from '@/components/map/CaucaMap';
 import { ReportIncident } from '@/components/incidents/ReportIncident';
+import ElectoralPlatform from '@/pages/ElectoralPlatform';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
-import { MapPin, AlertTriangle, Users, Plus, Home, Settings, LogOut, Phone, Package, Shield, Siren } from 'lucide-react';
+import { MapPin, AlertTriangle, Users, Plus, Home, Settings, LogOut, Phone, Package, Shield, Siren, Crown } from 'lucide-react';
 import { Incident, UserLocation, User } from '@/types';
 import EmergencyRequest from '@/components/victims/EmergencyRequest';
 import ResourceRequest from '@/components/victims/ResourceRequest';
@@ -21,7 +22,7 @@ const Index = () => {
   const [incidents, setIncidents] = useState<Incident[]>([]);
   const [userLocation, setUserLocation] = useState<UserLocation | undefined>();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState('map');
+  const [activeTab, setActiveTab] = useState('electoral');
   const [isReportSheetOpen, setIsReportSheetOpen] = useState(false);
   const [isEmergencySheetOpen, setIsEmergencySheetOpen] = useState(false);
   const [isResourceSheetOpen, setIsResourceSheetOpen] = useState(false);
@@ -214,11 +215,23 @@ const Index = () => {
               <span>CaucaConecta</span>
             </SheetTitle>
             <SheetDescription>
-              Red de apoyo y seguridad para el Cauca
+              Red de apoyo y plataforma electoral automatizada
             </SheetDescription>
           </SheetHeader>
 
           <div className="mt-6 space-y-4">
+            <Button
+              variant="ghost"
+              className="w-full justify-start"
+              onClick={() => {
+                setActiveTab('electoral');
+                setIsMenuOpen(false);
+              }}
+            >
+              <Crown className="h-4 w-4 mr-3" />
+              Mesa Redonda Electoral
+            </Button>
+
             <Button
               variant="ghost"
               className="w-full justify-start"
@@ -228,7 +241,7 @@ const Index = () => {
               }}
             >
               <Home className="h-4 w-4 mr-3" />
-              Mapa Principal
+              Mapa del Cauca
             </Button>
 
             <Button
@@ -293,7 +306,6 @@ const Index = () => {
             </div>
           </div>
 
-          {/* Información del usuario en el menú */}
           <div className="absolute bottom-4 left-4 right-4">
             <Card>
               <CardContent className="p-4">
@@ -320,6 +332,11 @@ const Index = () => {
       {/* Contenido principal */}
       <main className="flex-1 overflow-hidden">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full">
+          {/* Mesa Redonda Electoral - Nueva pestaña principal */}
+          <TabsContent value="electoral" className="h-full m-0">
+            <ElectoralPlatform />
+          </TabsContent>
+
           {/* Mapa principal */}
           <TabsContent value="map" className="h-full m-0">
             <div className="relative h-full">
